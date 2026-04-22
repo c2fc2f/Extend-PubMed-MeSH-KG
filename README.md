@@ -2,7 +2,7 @@
 
 A command-line multitool for enriching PubMed-MeSH knowledge graphs (CSV-based, targeting Neo4j) with additional nodes, relationships, and external metadata.
 
-It is designed to extend the output produced by [pm2kg](https://github.com/c2fc2f/PubMed-MeSH-to-KG), adding properties sourced from external biomedical databases such as UMLS.
+It is designed to extend the output produced by [pm2kg](https://github.com/c2fc2f/PubMed-MeSH-to-KG), adding additional nodes, relationships or properties sourced from external biomedical databases such as UMLS.
 
 ---
 

@@ -1,5 +1,5 @@
-//! Command to add UMLS CUI properties to every node of MeSH Descriptor and
-//! MeSH Concept
+//! Command to add UMLS CUI properties to every node of MeSH Concept,
+//! MeSH Descriptor, MeSHQualifier and MeSHSupplemental
 
 mod models;
 
@@ -20,8 +20,8 @@ use std::{
 
 use crate::subcommand::cui_umls::models::MrConsoRecord;
 
-/// Command to add UMLS CUI properties to every node of MeSH Descriptor and
-/// MeSH Concept
+/// Command to add UMLS CUI properties to every node of MeSH Concept,
+/// MeSH Descriptor, MeSHQualifier and MeSHSupplemental
 #[derive(Args)]
 pub struct SubArgs {
     /// Path to the `MRCONSO.RRF` file

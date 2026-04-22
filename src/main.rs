@@ -24,8 +24,8 @@ pub struct Cli {
 /// ingestion
 #[derive(Subcommand, Dispatch)]
 enum Command {
-    /// Command to add UMLS CUI properties to every node of MeSH Descriptor
-    /// and MeSH Concept
+    /// Command to add UMLS CUI properties to every node of MeSH Concept,
+    /// MeSH Descriptor, MeSHQualifier and MeSHSupplemental
     CuiUmls(cui_umls::SubArgs),
 }
 
