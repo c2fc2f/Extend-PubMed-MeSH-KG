@@ -1,5 +1,5 @@
 {
-  description = "A multitool for extending PubMed-MeSH knowledge graphs (Neo4J) with additional nodes, relationships, and external metadata";
+  description = "A multitool for extending PubMed-MeSH knowledge graphs (CSV-based for Neo4J) with additional nodes, relationships, and external metadata";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

@@ -13,6 +13,7 @@ rustPlatform.buildRustPackage {
     root = ../.;
     fileset = lib.fileset.unions [
       ../src
+      ../crates
       ../Cargo.lock
       ../Cargo.toml
     ];
@@ -35,7 +36,7 @@ rustPlatform.buildRustPackage {
   buildInputs = [ ];
 
   meta = with lib; {
-    description = "A multitool for extending PubMed-MeSH knowledge graphs (Neo4J) with additional nodes, relationships, and external metadata";
+    description = "A multitool for extending PubMed-MeSH knowledge graphs (CSV-based for Neo4J) with additional nodes, relationships, and external metadata";
     mainProgram = "xpmkg";
     homepage = "https://github.com/c2fc2f/Extend-PubMed-MeSH-KG";
     license = licenses.mit;

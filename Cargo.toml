@@ -5,7 +5,7 @@ edition = "2024"
 authors = [
   "c2fc2f <contact@c2fc2f.com>"
 ]
-description = "A multitool for extending PubMed-MeSH knowledge graphs (Neo4J) with additional nodes, relationships, and external metadata"
+description = "A multitool for extending PubMed-MeSH knowledge graphs (CSV-based for Neo4J) with additional nodes, relationships, and external metadata"
 readme = "README.md"
 repository = "https://github.com/c2fc2f/Extend-PubMed-MeSH-KG"
 license = "MIT"
@@ -36,3 +36,9 @@ missing_errors_doc = "warn"
 missing_panics_doc = "warn"
 
 [dependencies]
+clap = { version = "4", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+dispatch_derive = { path = "crates/dispatch_derive/" }
+serde = { version = "1", features = ["derive"] }
+csv-async = { version = "1", features = ["tokio"] }
+futures = "0.3"
