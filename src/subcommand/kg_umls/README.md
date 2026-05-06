@@ -1,3 +1,68 @@
+# xpmkg kg-umls
+
+Integrates the PubMed-MeSH knowledge graph with the UMLS knowledge graph by establishing cross-graph relationships between MeSH elements and UMLS atoms and concepts.
+
+## Overview
+
+This subcommand reads the `MRCONSO.RRF` file from a local UMLS release and produces two new Neo4j-compatible CSV relationship files that bridge the MeSH and UMLS ID spaces:
+
+- **`MAPPED_TO.csv`** — links each MeSH UI to the UMLS concept (CUI) it maps to
+- **`REFERENCE_OF.csv`** — links each UMLS atom (AUI) back to the MeSH UI it originates from
+
+Both files are written from scratch to the specified output directory.
+
+> **License requirement** — access to UMLS data requires a [UMLS Metathesaurus License](https://www.nlm.nih.gov/research/umls/index.html) from the NLM. The tool operates on a locally extracted UMLS release; it does not download data automatically.
+
+## Requirements
+
+- A Neo4j database that already contains:
+  - The PubMed-MeSH graph produced by [pm2kg](https://github.com/c2fc2f/PubMed-MeSH-to-KG)
+  - The UMLS graph produced by [umls2kg](https://github.com/c2fc2f/UMLS-to-KG)
+- A locally extracted UMLS release containing `META/MRCONSO.RRF`
+
+## Usage
+
+```
+xpmkg kg-umls --umls <PATH> [--output <PATH>]
+```
+
+| Flag | Short | Description | Default |
+|---|---|---|---|
+| `--umls <PATH>` | `-u` | Root directory of the extracted UMLS release (must contain `META/MRCONSO.RRF`) | *(required)* |
+| `--output <PATH>` | `-o` | Directory where the output CSV files are written | `.` (current directory) |
+
+### Example
+
+```bash
+xpmkg kg-umls \
+  --umls /data/umls_2026 \
+  --output /data/xpmkg-output/
+```
+
+## Output: Knowledge Graph Schema
+
+Both files are formatted for [Neo4j's bulk CSV importer](https://neo4j.com/docs/operations-manual/current/tools/neo4j-admin/neo4j-admin-import/).
+
+### Relationships
+
+| File | Type | From → To | Description |
+|---|---|---|---|
+| `MAPPED_TO.csv` | `MAPPED_TO` | MeSH → UMLSConcept | Links a MeSH UI (Concept, Descriptor, Qualifier, or Supplemental) to its UMLS concept (CUI). When a UI maps to multiple CUIs, one row is written per CUI. |
+| `REFERENCE_OF.csv` | `REFERENCE_OF` | UMLSAtom → MeSH | Links a UMLS atom (AUI) to the MeSH UI it references via its `SCUI` or `SDUI` field in `MRCONSO.RRF`. |
+
+### ID spaces
+
+| Label space | Used by |
+|---|---|
+| `MeSH` | MeSH nodes imported from pm2kg CSVs |
+| `UMLSMetathesaurus` | UMLS concept and atom nodes imported from umls2kg CSVs |
+
+## Importing into Neo4j
+
+Once both `pm2kg`, `umls2kg`, and `xpmkg kg-umls` have finished writing their CSV files, use `neo4j-admin database import full` to bulk-load the combined graph into Neo4j. The command below assumes the pm2kg CSVs are in `../PubMed-MeSH/`, the umls2kg CSVs are in `../UMLS/`, and the xpmkg output CSVs are in the current directory.
+
+> The database must be stopped before running an import. The `--overwrite-destination` flag will erase any existing data in the target database.
+
 ```bash
 sudo JDK_JAVA_OPTIONS="--add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED" \
   neo4j-admin database import full neo4j \
@@ -115,3 +180,5 @@ sudo JDK_JAVA_OPTIONS="--add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=ja
     --relationships=REFERENCE_OF=./REFERENCE_OF.csv \
     --additional-config=/var/lib/neo4j/conf/neo4j.conf
 ```
+
+The two `--add-opens` JVM flags are required on recent JDK versions to allow Neo4j's importer to access internal NIO and language APIs. Adjust `--additional-config` to point to your actual `neo4j.conf` if it lives elsewhere.
