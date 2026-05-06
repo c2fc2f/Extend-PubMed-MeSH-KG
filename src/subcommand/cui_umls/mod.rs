@@ -1,15 +1,14 @@
-//! Command to add UMLS CUI properties to every node of MeSH Concept,
-//! MeSH Descriptor, MeSHQualifier and MeSHSupplemental
-
-mod models;
+//! Enriches MeSH entities (Concepts, Descriptors, Qualifiers, and
+//! Supplementals) with corresponding UMLS Concept Unique Identifiers (CUIs)
 
 use clap::Args;
 use csv_async::{
-    AsyncDeserializer, AsyncReader, AsyncReaderBuilder, AsyncWriter, AsyncWriterBuilder,
-    DeserializeRecordsStream, StringRecord, StringRecordsStream,
+    AsyncReader, AsyncReaderBuilder, AsyncWriter, AsyncWriterBuilder, StringRecord,
+    StringRecordsStream,
 };
 use futures::StreamExt;
 use tokio::fs::{File, remove_file, rename};
+use umls::{UMLS, metathesaurus::conso::models::CoNSoRecord};
 
 use std::{
     collections::{HashMap, HashSet},
@@ -18,15 +17,13 @@ use std::{
     rc::Rc,
 };
 
-use crate::subcommand::cui_umls::models::MrConsoRecord;
-
-/// Command to add UMLS CUI properties to every node of MeSH Concept,
-/// MeSH Descriptor, MeSHQualifier and MeSHSupplemental
+/// Enriches MeSH entities (Concepts, Descriptors, Qualifiers, and
+/// Supplementals) with corresponding UMLS Concept Unique Identifiers (CUIs)
 #[derive(Args)]
 pub struct SubArgs {
-    /// Path to the `MRCONSO.RRF` file
+    /// Directory containing the UMLS Metathesaurus `META/MRCONSO.RRF` file
     #[arg(short, long)]
-    mrconso: PathBuf,
+    umls: PathBuf,
 
     /// Path to the result folder of pm2kg
     #[arg(short, long)]
@@ -35,23 +32,13 @@ pub struct SubArgs {
 
 /// Entry point to this command
 pub async fn run(args: SubArgs) -> ExitCode {
-    let mut rdr: AsyncDeserializer<File> = AsyncReaderBuilder::new()
-        .delimiter(b'|')
-        .has_headers(false)
-        .create_deserializer(match File::open(args.mrconso).await {
-            Ok(f) => f,
-            Err(e) => {
-                eprintln!("Could not open the MRCONSO.RRF file: {e:?}");
-                return ExitCode::FAILURE;
-            }
-        });
-
+    let umls: UMLS = UMLS::new(args.umls);
     let mut ui_to_cui: HashMap<String, HashSet<Rc<String>>> = HashMap::default();
 
-    let mut records: DeserializeRecordsStream<'_, File, MrConsoRecord> =
-        rdr.deserialize::<MrConsoRecord>();
-    while let Some(record) = records.next().await {
-        let record: MrConsoRecord = match record {
+    let mut stream = umls.concept_names_and_sources();
+
+    while let Some(record) = stream.next().await {
+        let record: CoNSoRecord = match record {
             Ok(m) => m,
             Err(e) => {
                 eprintln!("Deserialization error: {e:?}");
@@ -89,18 +76,16 @@ pub async fn run(args: SubArgs) -> ExitCode {
         }
     }
 
-    let (r1, r2, r3, r4) = tokio::join!(
+    let join: std::io::Result<((), (), (), ())> = tokio::try_join!(
         add_cui(args.output.join("MeSHConcept.csv"), &ui_to_cui),
         add_cui(args.output.join("MeSHDescriptor.csv"), &ui_to_cui),
         add_cui(args.output.join("MeSHQualifier.csv"), &ui_to_cui),
         add_cui(args.output.join("MeSHSupplemental.csv"), &ui_to_cui),
     );
 
-    for result in [r1, r2, r3, r4] {
-        if let Err(e) = result {
-            eprintln!("Error during writing of the CSV files:\n{:?}", e);
-            return ExitCode::FAILURE;
-        }
+    if let Err(e) = join {
+        eprintln!("Error during writing of the CSV files:\n{:?}", e);
+        return ExitCode::FAILURE;
     }
 
     ExitCode::SUCCESS

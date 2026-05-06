@@ -69,7 +69,7 @@ Each node is matched by its MeSH UI. When multiple CUIs map to the same UI, they
 
 | Flag | Description |
 |---|---|
-| `-m`, `--mrconso <PATH>` | Path to the `MRCONSO.RRF` file from a UMLS release |
+| `-u`, `--umls <PATH>` | Directory containing the UMLS Metathesaurus `META/MRCONSO.RRF` file |
 | `-o`, `--output <PATH>` | Path to the folder containing the pm2kg output CSV files |
 
 **Example**
