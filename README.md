@@ -14,34 +14,28 @@ It is designed to extend the output produced by [pm2kg](https://github.com/c2fc2
 
 ## Installation
 
-### With Nix
-
-A Nix flake is provided. To build the package:
-
-```sh
-nix build github:c2fc2f/Extend-PubMed-MeSH-KG
-```
-
-To enter a development shell with all required tooling (Rust, rust-analyzer, clippy, rustfmt):
-
-```sh
-nix develop
-```
-
 ### From source
 
 ```bash
 git clone https://github.com/c2fc2f/Extend-PubMed-MeSH-KG
 cd Extend-PubMed-MeSH-KG
 cargo build --release
+# or
+cargo install --git https://github.com/c2fc2f/Extend-PubMed-MeSH-KG
 ```
 
 The compiled binary will be at `target/release/xpmkg`.
 
-### With Cargo
+### With Nix
+
+A Nix flake is provided:
 
 ```sh
-cargo install --git https://github.com/c2fc2f/Extend-PubMed-MeSH-KG
+nix build github:c2fc2f/Extend-PubMed-MeSH-KG
+# or
+nix build
+# or, to enter a development shell:
+nix develop
 ```
 
 ---
@@ -88,29 +82,13 @@ xpmkg cui-umls \
 
 The CSV files are updated in place. Each file is written to a temporary `.tmp` file first, then atomically swapped to replace the original only on success, so a partial failure does not corrupt existing data.
 
-> **Prerequisites:** You need a UMLS license and a local UMLS release to obtain `MRCONSO.RRF`. You can request access at [https://www.nlm.nih.gov/research/umls/](https://www.nlm.nih.gov/research/umls/).
+> **Prerequisites:** You need a UMLS license and a local UMLS release to obtain `MRCONSO.RRF`. You can request access at [https://www.nlm.nih.gov/research/umls/](https://www.nlm.nih.gov/research/umls/index.html).
 
 ---
 
-## Project structure
+## Library Crate
 
-```
-.
-├── src/
-│   ├── main.rs                        # CLI entry point (clap + Dispatch)
-│   └── subcommand/
-│       └── cui_umls/
-│           ├── mod.rs                 # cui-umls subcommand logic
-│           └── models.rs              # MRCONSO.RRF record schema
-├── crates/
-│   └── dispatch_derive/               # Internal proc-macro crate
-│       └── src/lib.rs                 # #[derive(Dispatch)] implementation
-├── nix/
-│   └── package.nix                    # Nix package definition
-├── flake.nix                          # Nix flake (build + devShell)
-├── Cargo.toml
-└── Cargo.lock
-```
+The `dispatch_derive` library crate can be used independently in other projects.
 
 ### `dispatch_derive`
 
@@ -122,4 +100,4 @@ For example, a variant `CuiUmls(cui_umls::SubArgs)` automatically dispatches to 
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+This project is licensed under the [LICENSE](LICENSE).
