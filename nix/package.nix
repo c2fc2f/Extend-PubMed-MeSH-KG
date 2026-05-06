@@ -25,7 +25,12 @@ rustPlatform.buildRustPackage {
   # inject version from nix into the build
   env.NIX_RELEASE_VERSION = version;
 
-  cargoLock.lockFile = ../Cargo.lock;
+  cargoLock = {
+    lockFile = ../Cargo.lock;
+    outputHashes = {
+      "umls-0.1.0" = "sha256-JDSh+PuqOR8em2MLN0zZKjpIqD4nH1Lb5VJOl1GpCak=";
+    };
+  };
 
   nativeBuildInputs = [
     installShellFiles
