@@ -42,4 +42,5 @@ dispatch_derive = { path = "crates/dispatch_derive/" }
 serde = { version = "1", features = ["derive"] }
 csv-async = { version = "1", features = ["tokio"] }
 futures = "0.3"
+rig-core = "0.38"
 umls = { git = "https://github.com/c2fc2f/UMLS-to-KG.git" }
