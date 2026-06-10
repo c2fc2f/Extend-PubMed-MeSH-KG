@@ -57,6 +57,7 @@ Run `xpmkg --help` for the full list of available subcommands, or `xpmkg <COMMAN
 | Subcommand | Description | Documentation |
 |---|---|---|
 | `cui-umls` | Annotates MeSH nodes with their corresponding UMLS CUIs | [README](src/subcommand/cui_umls/README.md) |
+| `embedding` | Enriches MeSH and PubMed entities with dense vector embeddings via OpenAI or Ollama | [README](src/subcommand/embedding/README.md) |
 | `kg-umls` | Creates cross-graph relationships between MeSH elements and UMLS atoms and concepts | [README](src/subcommand/kg_umls/README.md) |
 
 ## Library Crate
