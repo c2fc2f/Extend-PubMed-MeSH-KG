@@ -76,7 +76,7 @@ sudo JDK_JAVA_OPTIONS="--add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=ja
     --nodes=PubMed:PubMedJournal=../PubMed-MeSH/PubMedJournal.csv \
     --nodes=PubMed:PubMedKeyword=../PubMed-MeSH/PubMedKeyword.csv \
     --nodes=MeSH:MeSHDescriptor=../PubMed-MeSH/MeSHDescriptor.csv \
-    --nodes=MeSH:MeSHQQualifier=../PubMed-MeSH/MeSHQualifier.csv \
+    --nodes=MeSH:MeSHQualifier=../PubMed-MeSH/MeSHQualifier.csv \
     --nodes=MeSH:MeSHSupplemental=../PubMed-MeSH/MeSHSupplemental.csv \
     --nodes=MeSH:MeSHConcept=../PubMed-MeSH/MeSHConcept.csv \
     --nodes=MeSH:MeSHDescriptorQualified=../PubMed-MeSH/MeSHDescriptorQualified.csv \
